@@ -206,4 +206,51 @@ animate();
 ![Expected Directory Structure](/screenshots/headers_02_directoryStructure.png)
 ![`index.html`](/screenshots/headers_03_html.png)
 ![`cube.js`](/screenshots/headers_04_js.png)
- 
+
+### Add Internet Permission (Android-only)
+- Add internet permission to the `composeApp/src/androidMain/AndroidManifest.xml`
+  * **Important**: `three.min.js` needs to be downloaded from a remote server, if you don't complete this step you may see a blank screen
+
+![Android Manifest Internet Permissions](screenshots/manifest.png)
+
+### Update the WebView to Reference the Resources
+
+- First, try replacing the existing HTML string with a version that will read from the shared resource file. [Link (note that because we used the wizard earlier, the dependencies were already added)](https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-resources-usage.html#raw-files)
+```kotlin
+val html = Res.readBytes("files/index.html").decodeToString()
+```
+- The `.readBytes` method will have a red underline, indicating errors we must correct prior to compilation:
+  * "Suspend function 'readBytes' should be called only from a coroutine or another suspend function"
+  * "This API is experimental and likely to change in the future"
+- The latter is a simple fix, click the "opt-in" link at the bottom, which will insert `@OptIn(ExperimentalResourceApi::class)` above your `App` definition
+- The former may be corrected by reading the file within a `LaunchedEffect`; since we also will want to load the text of the `cube.js` file, we do this with both:
+```kotlin
+var html by remember { mutableStateOf("") }
+var js by remember { mutableStateOf("") }
+LaunchedEffect(Unit) {
+    html = Res.readBytes("files/index.html").decodeToString()
+    js = Res.readBytes("files/cube.js").decodeToString()
+}
+```
+- We have designated the HTML and JavaScript strings as `remember` variables so that their state is retained across re-compositions, and to assure that the UI updates once their text has been loaded.
+- Move the content associated with the `WebView` into its own `@Composable` function which takes the `html` string:
+```kotlin
+@Composable
+fun ThreeJsWebView(html: String) {
+    val webViewState = rememberWebViewStateWithHTMLData(
+        data = html
+    )
+    WebView(webViewState, modifier = Modifier.fillMaxSize())
+}
+```
+- Call this new `ThreeJsWebView(html)` function in place of the prior `WebView(webViewState)`, and insert the JavaScript in place of the placeholder `/*CODE*/`:
+```kotlin
+MaterialTheme {
+    ThreeJsWebView(html.replace("/*CODE*/", js))
+}
+```
+- If you build and run the app now, you should see a rotating cube; congratulations, you have embedded Three.js in a Compose Multiplatform app!
+
+![Errors When Calling `.readBytes`](screenshots/webview_00_readBytesErrors.png)
+![Complete Code](screenshots/webview_01_cube.png)
+![Animated Cube](screenshots/webview_02_cubeAnimated.gif)
