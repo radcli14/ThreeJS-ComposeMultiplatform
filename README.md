@@ -80,3 +80,18 @@ git push
 ![Optimize Imports](screenshots/remove_04_optimizeImports.png)
 ![Minimal Code](screenshots/remove_05_minimalCode.png)
 ![Minimal App](screenshots/remove_06_minimalApp.png)
+
+### Add the Compose Multiplatform Webview Dependency
+- As of February 2025, there is no official Web View built-in to the Compose Multiplatform framework, however, we can use a third-party widget created by Kevinn Zou [Link](https://kevinnzou.github.io/compose-webview-multiplatform/).
+- We will add the dependency to our project using Gradle, specifically in the file `composeApp/build.gradle.kts` [Link](https://kevinnzou.github.io/compose-webview-multiplatform/installation/).
+- Scroll down to the section `kotlin { ... sourceSets { ... commonMain.dependences { ...` and add `api("io.github.kevinnzou:compose-webview-multiplatform:1.9.40")`.
+- Optionally, you may hover over the new dependency and click "replace with new library catalog dependency ...".
+  * No effect on app itself, but a bit cleaner for dependency management.
+  * Automatically changes to `api(libs.compose.webview.multiplatform)`
+  * In `gradle/libs.versions.toml`, you will find the lines:
+    - `composeWebviewMultiplatform = "1.9.40"`
+    - `compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "composeWebviewMultiplatform" }`  
+- Click "Sync Now" at the top of the screen to rebuild the gradle project.
+
+![Gradle build file](screenshots/dependencies_00_gradle.png)
+![API dependencie](screenshots/dependencies_01_Api.png)
