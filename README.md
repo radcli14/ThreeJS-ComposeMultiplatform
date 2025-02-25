@@ -37,3 +37,23 @@ git push
 ```
 
 ![Kotlin Multiplatform Wizard](screenshots/composeMultiplatformWizard.png)
+
+### Open the Project in Android Studio
+- Start Android Studio
+- Click `File -> Open`
+- Open the folder you just copied over.
+   * In my case, I am selecting the `ThreeDemo` folder.
+   * You do not need to select the root directory of the GitHub folder, just the folder created by the wizard.
+- Usually, select to open the project in a new window
+- "Trust" the project (its yours, after all)
+- Android Studio will open starting from the `README.md` file
+- After various gradle build and sync tasks complete, you may "Run" the project
+   * You may need to set up an emulator, which is out of scope of this tutorial, but you may search online or use this [Link](https://developer.android.com/studio/run/emulator).
+   * Or, you can run on your own device if you have one. [Link](https://developer.android.com/studio/run/device)
+- The template app is just a simple button, which will display a Compose Multiplatform logo and platform-specific greeting when tapped.
+
+![Selection](screenshots/openProject_00_Selection.png)
+![In New Window](screenshots/openProject_01_InNewWindow.png)
+![Trust](screenshots/openProject_02_Trust.png)
+![README](screenshots/openProject_03_README.png)
+![Run](screenshots/openProject_04_Run.gif)
