@@ -254,3 +254,20 @@ MaterialTheme {
 ![Errors When Calling `.readBytes`](screenshots/webview_00_readBytesErrors.png)
 ![Complete Code](screenshots/webview_01_cube.png)
 ![Animated Cube](screenshots/webview_02_cubeAnimated.gif)
+
+### Building for iOS
+- Open XCode, and select "Open Existing Project"
+- Select the project at `iosApp/iosApp.xcodeproj`
+- When the project opens, select `projectNavigator` tab (the blue folder icon), and `iosApp` in the upper left corner
+- Click on `Signing & Capabilities` in the center of the screen, and select your team
+  * Note, this requires a developer account [Link](https://developer.apple.com/programs/enroll/)
+- Select either a simulator, or your physical device from the list at the top.
+- Click the play button on top to build and run the app.
+- Congratulations again, you have now built a clone of the Android app that runs on iOS, with the exact same Three.js animation!
+
+![Signing](screenshots/ios_00_signing.png)
+![Cube on iOS](screenshots/ios_01_build.png)
+
+### Adding Bi-Directional Interactions
+- Javascript commands can be evaluated after loading the WebView with a `WebViewNavigator` object
+- Callbacks from JavaScript to the Kotlin app can be created with a `WebViewJsBridge` and custom handler that inherits from `IJsMessageHandler`
