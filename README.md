@@ -71,6 +71,25 @@ git push
  - Navigate to `compose/src/commonMain/<yourAppID>/App.kt`; notice that the `Greeting().greet()` item is highlighted red, indicating that it will not build due to the deleted dependency.
  - Delete all of the code Between `MaterialTheme { ...` and its closing bracket, and replace with a single `Text("Three.js will go here!")`.
  - Hover above one of the now "grayed-out" import statements at the top of the window, and click "optimize imports" to remove those that are no longer required.
+ - After optimizing imports, the entire `App.kt` file should be as follows:
+
+```kotlin
+package <yourAppID>
+
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
+@Composable
+@Preview
+fun App() {
+    MaterialTheme {
+        Text("Three.js will go here!")
+    }
+}
+```
+
  - Run the app again, to get the now-simplified app.
 
 ![Files to delete](screenshots/remove_00_files.png)
@@ -92,6 +111,99 @@ git push
     - `composeWebviewMultiplatform = "1.9.40"`
     - `compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "composeWebviewMultiplatform" }`  
 - Click "Sync Now" at the top of the screen to rebuild the gradle project.
+- Create a basic HTML string to test the WebView in the space directly above the `MaterialTheme { ...` line:
+```kotlin
+val html = """
+<html>
+    <body>
+        <h1>Three.js will go here!</h1>
+        <p>Soon with JavaScript...</p>
+    </body>
+</html>
+""".trimIndent()
+```
+- Immediately below, create the state that holds the HTML string:
+```kotlin
+val webViewState = rememberWebViewStateWithHTMLData(
+    data = html
+)
+```
+- Replace the `Text("Three.js will go here!")` line from earlier with `WebView(webViewState)`, and remove the `Text` import.
+- Run the app to verify that the HTML is loaded and formatted in the WebView.
 
 ![Gradle build file](screenshots/dependencies_00_gradle.png)
 ![API dependencie](screenshots/dependencies_01_Api.png)
+![HTML](screenshots/dependencies_02_HTML.png)
+
+### Create HTML Header and `Three.js` Javascript Resources
+- If it does not exist already, create a `composeApp/commonMain/composeResources/files` directory.
+  * When we deleted the Compose Multiplatform logo earlier, it was in `composeResources/drawable`.
+  * Because there would be no other shared resources, Android Studio may automatically remove the `composeResources` folder, however, we can add it back in.
+  * Right click on `commonMain` in the Projects navigator, hover over "New" and then "Directory," and enter `composeResources` in the dialog that appears.
+  * Repeat this process, right clicking on the newly created `composeResources` and creating a `files` subdirectory.
+- Add empty files named `index.html` and `cube.js` inside.
+  * Right click on the newly created `files` directory, then hover over "New" and then "File," and enter `index.html` in the dialog that appears.
+  * Repeat, this time creating an empty `cube.js` file.
+- Inside the newly created `index.html`, paste the following:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.173.0/build/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<script>
+/*CODE*/
+</script>
+</body>
+</html>
+```
+- Inside the newly created `cube.js`, paste the following
+```js
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+const geometry = new THREE.BoxGeometry();
+const material = new THREE.MeshNormalMaterial();
+const cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+
+camera.position.z = 5;
+
+function animate() {
+    requestAnimationFrame(animate);
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
+    renderer.render(scene, camera);
+}
+
+animate();
+```
+
+![Create New Directory](screenshots/headers_00_newDirectory.png)
+![Add to `git`](/screenshots/headers_01_git.png)
+![Expected Directory Structure](/screenshots/headers_02_directoryStructure.png)
+![`index.html`](/screenshots/headers_03_html.png)
+![`cube.js`](/screenshots/headers_04_js.png)
+ 
