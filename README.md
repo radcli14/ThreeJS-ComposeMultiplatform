@@ -270,4 +270,79 @@ MaterialTheme {
 
 ### Adding Bi-Directional Interactions
 - Javascript commands can be evaluated after loading the WebView with a `WebViewNavigator` object
-- Callbacks from JavaScript to the Kotlin app can be created with a `WebViewJsBridge` and custom handler that inherits from `IJsMessageHandler`
+- Inside our `ThreeJsWebView` add the following code, which creates a navigator that can evaluate JavaScript commands or other common browser operations, and a float value that we will control:
+```kotlin
+val navigator = rememberWebViewNavigator()
+var scale by remember { mutableStateOf(1f) }
+```
+- Provide the newly created navigator to the `WebView`, which will now be created inside of a `Column` as follows:
+```kotlin
+Column {  // Create a column, as we want to place a control underneath
+    WebView(
+        state = webViewState,
+        modifier = Modifier.weight(1f),  // Note change to .weight(1f) modifier instead of .fillMaxSize()
+        navigator = navigator
+    )
+}
+```
+- Create a  `Slider` control inside the column and directly underneath the `WebView`
+```kotlin
+Slider(
+    value = scale,
+    onValueChange = {
+        scale = it
+        navigator.evaluateJavaScript("cube.scale.set($scale, $scale, $scale);")
+    },
+    modifier = Modifier.padding(12.dp),
+    valueRange = 0.1f..2f
+)
+```
+- Run the app, and you will see the new slider control, which will scale the size of the cube when you toggle its value.
+
+![Scale Control](screenshots/controls_00_scale.png)
+  
+- Callbacks from JavaScript to the Kotlin app can be created with a `WebViewJsBridge`.
+- Create a custom message handler class that conforms to `IJsMessageHandler`, which will receive a string from the JavaScript code representing the cube's orientation:
+```kotlin
+class QuaternionMessageHandler(val handler: (String) -> Unit): IJsMessageHandler {
+    override fun handle(
+        message: JsMessage,
+        navigator: WebViewNavigator?,
+        callback: (String) -> Unit
+    ) {
+        handler(message.params)
+    }
+
+    override fun methodName(): String {
+        return "Quaternion"
+    }
+}
+```
+- Create a `WebViewJsBridge` inside the `ThreeJsWebView`, underneath where we created the `navigator` and `scale`, and register an instantiation of the message handler:
+```kotlin
+val bridge = rememberWebViewJsBridge()
+var quaternion by remember { mutableStateOf("") }
+bridge.register(QuaternionMessageHandler(handler = { quaternion = it }))
+```
+- Provide this bridge as an argument to the `WebView`:
+```kotlin
+WebView(
+    state = webViewState,
+    modifier = Modifier.weight(1f),
+    navigator = navigator,
+    webViewJsBridge = bridge
+)
+```
+- Add a `Text` underneath the `Slider` to display the current `quaternion` string:
+```kotlin
+Text(quaternion, modifier = Modifier.padding(12.dp))
+```
+- Add the callback code inside the `animate()` function in `cube.js`, directly underneath the `renderer.render(scene, camera);` line:
+```js
+const { x, y, z, w } = cube.quaternion;
+const quaternionString = `Quaternion: (x: ${x.toFixed(2)}, y: ${y.toFixed(2)}, z: ${z.toFixed(2)}, w: ${w.toFixed(2)})`;
+window.kmpJsBridge.callNative("Quaternion", quaternionString, null);
+```
+- Now if you run the app, you will see text at the bottom of the screen containing the instantaneous orientation of the cube, which was provided to the Kotlin Compose Multiplatform UI from inside a callback in JavaScript, using Three.js toolsets!
+  
+![Quaternion Display](screenshots/controls_01_quaternion.png)
