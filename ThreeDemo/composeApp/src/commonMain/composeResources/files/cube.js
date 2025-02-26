@@ -16,6 +16,10 @@ function animate() {
     cube.rotation.x += 0.01;
     cube.rotation.y += 0.01;
     renderer.render(scene, camera);
+
+    const { x, y, z, w } = cube.quaternion;
+    const quaternionString = `Quaternion: (x: ${x.toFixed(2)}, y: ${y.toFixed(2)}, z: ${z.toFixed(2)}, w: ${w.toFixed(2)})`;
+    window.kmpJsBridge.callNative("Quaternion", quaternionString, null);
 }
 
 animate();
