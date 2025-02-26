@@ -2,6 +2,17 @@
 Integration of the Three.js toolset into the Compose Multiplatform framework 
 
 ## Procedure
+The sections below provide a step-by-step process describing how a lightweight, Three.js environment may be embedded in an Android/iOS multiplatform app using Jetpack Compose Multiplatform.
+The tutorial is detailed, however, you may also choose to simply clone or fork this repository to start your own project.
+Alternately, you can build your project starting from the [Kotlin Multiplatform wizard](https://kmp.jetbrains.com/?), and get Three.js running as follows:
+- Include a dependency in your `build.gradle.kts` file for [Compose Webview Multiplatform](https://kevinnzou.github.io/compose-webview-multiplatform/).
+- Add an [HTML header file](https://github.com/radcli14/ThreeJS-ComposeMultiplatform/blob/main/ThreeDemo/composeApp/src/commonMain/composeResources/files/index.html) with an import map for Three.js version 0.173.0, and preferred styling for mobile, into `composeResources/files`.
+- Add a [sample JavaScript file](https://github.com/radcli14/ThreeJS-ComposeMultiplatform/blob/main/ThreeDemo/composeApp/src/commonMain/composeResources/files/index.html), which renders a simple rotating cube, into `composeResources/files`.
+- Replace code in the common `App.kt` code file with [code that generates a WebView](https://github.com/radcli14/ThreeJS-ComposeMultiplatform/blob/main/ThreeDemo/composeApp/src/commonMain/kotlin/com/dcengineer/threedemo/App.kt) referencing the HTML and Javascript resources.
+
+I mostly bypass some of the basics of Android and Jetpack Compose, but have provided links where appropriate.
+The one thing I do suggest is to **use the Kotlin Multiplatform Wizard** that I have [linked](https://kmp.jetbrains.com/?).
+While you can create the project directly within Android Studio while bypassing that link, generally the wizard is agreed to be more up-to-date at any given time, and its project structure should be consistent with the tutorrial.
 
 ### Coding Environment Setup
 - Install the latest Android Studio. [Link](https://developer.android.com/studio)
@@ -44,19 +55,28 @@ git push
 - Open the folder you just copied over.
    * In my case, I am selecting the `ThreeDemo` folder.
    * You do not need to select the root directory of the GitHub folder, just the folder created by the wizard.
+
+![Selection](screenshots/openProject_00_Selection.png)
+
 - Usually, select to open the project in a new window
+
+![In New Window](screenshots/openProject_01_InNewWindow.png)
+
 - "Trust" the project (its yours, after all)
+
+![Trust](screenshots/openProject_02_Trust.png)
+
 - Android Studio will open starting from the `README.md` file
+
+![README](screenshots/openProject_03_README.png)
+ 
 - After various gradle build and sync tasks complete, you may "Run" the project
    * You may need to set up an emulator, which is out of scope of this tutorial, but you may search online or use this [Link](https://developer.android.com/studio/run/emulator).
    * Or, you can run on your own device if you have one. [Link](https://developer.android.com/studio/run/device)
 - The template app is just a simple button, which will display a Compose Multiplatform logo and platform-specific greeting when tapped.
 
-![Selection](screenshots/openProject_00_Selection.png)
-![In New Window](screenshots/openProject_01_InNewWindow.png)
-![Trust](screenshots/openProject_02_Trust.png)
-![README](screenshots/openProject_03_README.png)
 ![Run](screenshots/openProject_04_Run.gif)
+
 
 ### Optional: Remove Unnecessary Code and Resources
 
@@ -67,11 +87,26 @@ git push
   * `composeApp/src/commonMain/<yourAppID>/Greeting.kt` : a script that generates the greeting text, `Compose: Hello, Android 34` in the animation above.
   * `composeApp/src/commonMain/<yourAppID>/Platform.kt` : the "expect" function, that directs to the respective `Platform.android.kt` or `Platform.ios.kt` files depending on what device you are using.
   * `composeApp/src/iosMain/kotlin/<yourAppID>/Platform.ios.kt` : a script to get the string name of the iOS platform.
- - If you get a warning that the `Greeting.kt` file has one usage, delete it anyway, as we will remove that usage in the following step.
- - Navigate to `compose/src/commonMain/<yourAppID>/App.kt`; notice that the `Greeting().greet()` item is highlighted red, indicating that it will not build due to the deleted dependency.
- - Delete all of the code Between `MaterialTheme { ...` and its closing bracket, and replace with a single `Text("Three.js will go here!")`.
- - Hover above one of the now "grayed-out" import statements at the top of the window, and click "optimize imports" to remove those that are no longer required.
- - After optimizing imports, the entire `App.kt` file should be as follows:
+
+![Files to delete](screenshots/remove_00_files.png)
+
+- If you get a warning that the `Greeting.kt` file has one usage, delete it anyway, as we will remove that usage in the following step.
+
+![Override safe delete](screenshots/remove_01_deleteAnyway.png)
+
+- Navigate to `compose/src/commonMain/<yourAppID>/App.kt`; notice that the `Greeting().greet()` item is highlighted red, indicating that it will not build due to the deleted dependency.
+
+![App](screenshots/remove_02_App.png)
+
+- Delete all of the code Between `MaterialTheme { ...` and its closing bracket, and replace with a single `Text("Three.js will go here!")`.
+
+![Delete Code](screenshots/remove_03_deleteCode.png)
+
+- Hover above one of the now "grayed-out" import statements at the top of the window, and click "optimize imports" to remove those that are no longer required.
+
+![Optimize Imports](screenshots/remove_04_optimizeImports.png)
+ 
+- After optimizing imports, the entire `App.kt` file should be as follows (replacing your app ID with whatever you provided as a Project ID in the Wizard):
 
 ```kotlin
 package <yourAppID>
@@ -89,20 +124,18 @@ fun App() {
     }
 }
 ```
-
- - Run the app again, to get the now-simplified app.
-
-![Files to delete](screenshots/remove_00_files.png)
-![Override safe delete](screenshots/remove_01_deleteAnyway.png)
-![App](screenshots/remove_02_App.png)
-![Delete Code](screenshots/remove_03_deleteCode.png)
-![Optimize Imports](screenshots/remove_04_optimizeImports.png)
 ![Minimal Code](screenshots/remove_05_minimalCode.png)
+
+- Run the app again, to get the now-simplified app.
+
 ![Minimal App](screenshots/remove_06_minimalApp.png)
 
 ### Add the Compose Multiplatform Webview Dependency
 - As of February 2025, there is no official Web View built-in to the Compose Multiplatform framework, however, we can use a third-party widget created by Kevinn Zou [Link](https://kevinnzou.github.io/compose-webview-multiplatform/).
 - We will add the dependency to our project using Gradle, specifically in the file `composeApp/build.gradle.kts` [Link](https://kevinnzou.github.io/compose-webview-multiplatform/installation/).
+
+![Gradle build file](screenshots/dependencies_00_gradle.png)
+
 - Scroll down to the section `kotlin { ... sourceSets { ... commonMain.dependences { ...` and add `api("io.github.kevinnzou:compose-webview-multiplatform:1.9.40")`.
 - Optionally, you may hover over the new dependency and click "replace with new library catalog dependency ...".
   * No effect on app itself, but a bit cleaner for dependency management.
@@ -110,6 +143,9 @@ fun App() {
   * In `gradle/libs.versions.toml`, you will find the lines:
     - `composeWebviewMultiplatform = "1.9.40"`
     - `compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "composeWebviewMultiplatform" }`  
+
+![API dependencie](screenshots/dependencies_01_Api.png)
+
 - Click "Sync Now" at the top of the screen to rebuild the gradle project.
 - Create a basic HTML string to test the WebView in the space directly above the `MaterialTheme { ...` line:
 ```kotlin
@@ -131,8 +167,6 @@ val webViewState = rememberWebViewStateWithHTMLData(
 - Replace the `Text("Three.js will go here!")` line from earlier with `WebView(webViewState)`, and remove the `Text` import.
 - Run the app to verify that the HTML is loaded and formatted in the WebView.
 
-![Gradle build file](screenshots/dependencies_00_gradle.png)
-![API dependencie](screenshots/dependencies_01_Api.png)
 ![HTML](screenshots/dependencies_02_HTML.png)
 
 ### Create HTML Header and `Three.js` Javascript Resources
@@ -140,10 +174,17 @@ val webViewState = rememberWebViewStateWithHTMLData(
   * When we deleted the Compose Multiplatform logo earlier, it was in `composeResources/drawable`.
   * Because there would be no other shared resources, Android Studio may automatically remove the `composeResources` folder, however, we can add it back in.
   * Right click on `commonMain` in the Projects navigator, hover over "New" and then "Directory," and enter `composeResources` in the dialog that appears.
+ 
+![Create New Directory](screenshots/headers_00_newDirectory.png)
+  
   * Repeat this process, right clicking on the newly created `composeResources` and creating a `files` subdirectory.
 - Add empty files named `index.html` and `cube.js` inside.
   * Right click on the newly created `files` directory, then hover over "New" and then "File," and enter `index.html` in the dialog that appears.
   * Repeat, this time creating an empty `cube.js` file.
+
+![Add to `git`](/screenshots/headers_01_git.png)
+![Expected Directory Structure](/screenshots/headers_02_directoryStructure.png)
+
 - Inside the newly created `index.html`, paste the following:
 ```html
 <!DOCTYPE html>
@@ -169,6 +210,9 @@ val webViewState = rememberWebViewStateWithHTMLData(
 </body>
 </html>
 ```
+
+![`index.html`](/screenshots/headers_03_html.png)
+
 - Inside the newly created `cube.js`, paste the following
 ```js
 import * as THREE from "three";
@@ -201,10 +245,6 @@ function animate() {
 animate();
 ```
 
-![Create New Directory](screenshots/headers_00_newDirectory.png)
-![Add to `git`](/screenshots/headers_01_git.png)
-![Expected Directory Structure](/screenshots/headers_02_directoryStructure.png)
-![`index.html`](/screenshots/headers_03_html.png)
 ![`cube.js`](/screenshots/headers_04_js.png)
 
 ### Add Internet Permission (Android-only)
@@ -222,6 +262,9 @@ val html = Res.readBytes("files/index.html").decodeToString()
 - The `.readBytes` method will have a red underline, indicating errors we must correct prior to compilation:
   * "Suspend function 'readBytes' should be called only from a coroutine or another suspend function"
   * "This API is experimental and likely to change in the future"
+
+![Errors When Calling `.readBytes`](screenshots/webview_00_readBytesErrors.png)
+
 - The latter is a simple fix, click the "opt-in" link at the bottom, which will insert `@OptIn(ExperimentalResourceApi::class)` above your `App` definition
 - The former may be corrected by reading the file within a `LaunchedEffect`; since we also will want to load the text of the `cube.js` file, we do this with both:
 ```kotlin
@@ -251,7 +294,6 @@ MaterialTheme {
 ```
 - If you build and run the app now, you should see a rotating cube; congratulations, you have embedded Three.js in a Compose Multiplatform app!
 
-![Errors When Calling `.readBytes`](screenshots/webview_00_readBytesErrors.png)
 ![Complete Code](screenshots/webview_01_cube.png)
 ![Animated Cube](screenshots/webview_02_cubeAnimated.gif)
 
@@ -261,11 +303,13 @@ MaterialTheme {
 - When the project opens, select `projectNavigator` tab (the blue folder icon), and `iosApp` in the upper left corner
 - Click on `Signing & Capabilities` in the center of the screen, and select your team
   * Note, this requires a developer account [Link](https://developer.apple.com/programs/enroll/)
+
+![Signing](screenshots/ios_00_signing.png)
+
 - Select either a simulator, or your physical device from the list at the top.
 - Click the play button on top to build and run the app.
 - Congratulations again, you have now built a clone of the Android app that runs on iOS, with the exact same Three.js animation!
 
-![Signing](screenshots/ios_00_signing.png)
 ![Cube on iOS](screenshots/ios_01_build.png)
 
 ### Adding Bi-Directional Interactions
