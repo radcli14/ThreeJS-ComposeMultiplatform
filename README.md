@@ -152,7 +152,6 @@ val webViewState = rememberWebViewStateWithHTMLData(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Three.js Demo</title>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.173.0/build/three.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -170,7 +169,7 @@ val webViewState = rememberWebViewStateWithHTMLData(
     </style>
 </head>
 <body>
-<script>
+<script type="module">
 /*CODE*/
 </script>
 </body>
@@ -178,6 +177,8 @@ val webViewState = rememberWebViewStateWithHTMLData(
 ```
 - Inside the newly created `cube.js`, paste the following
 ```js
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.173.0/build/three.module.js";
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer();
