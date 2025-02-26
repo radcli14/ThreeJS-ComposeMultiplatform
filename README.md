@@ -390,3 +390,7 @@ window.kmpJsBridge.callNative("Quaternion", quaternionString, null);
 - Now if you run the app, you will see text at the bottom of the screen containing the instantaneous orientation of the cube, which was provided to the Kotlin Compose Multiplatform UI from inside a callback in JavaScript, using Three.js toolsets!
   
 ![Quaternion Display](screenshots/controls_01_quaternion.png)
+
+- I added a header text as well, just so people know what they are seeing, here is the Android version at completion, and animated:
+
+![Animated, scaled cube on Android](screenshots/androidFinal.gif)
