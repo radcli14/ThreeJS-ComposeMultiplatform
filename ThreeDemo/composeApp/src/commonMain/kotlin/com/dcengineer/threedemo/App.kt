@@ -53,7 +53,7 @@ fun ThreeJsWebView(html: String) {
     Column {
         Text("Three.js in Compose Multiplatform!",
             modifier = Modifier.padding(12.dp),
-            style = MaterialTheme.typography.h5
+            style = MaterialTheme.typography.h4
         )
         WebView(
             state = webViewState,
@@ -70,7 +70,10 @@ fun ThreeJsWebView(html: String) {
             modifier = Modifier.padding(12.dp),
             valueRange = 0.1f..2f
         )
-        Text(quaternion, modifier = Modifier.padding(12.dp))
+        Text(quaternion,
+            modifier = Modifier.padding(12.dp),
+            style = MaterialTheme.typography.body2
+        )
     }
 }
 
