@@ -147,24 +147,18 @@ val webViewState = rememberWebViewStateWithHTMLData(
 - Inside the newly created `index.html`, paste the following:
 ```html
 <!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three.js Demo</title>
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.173.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.173.0/examples/jsm/"
+          }
+        }
+    </script>
     <style>
         * {
             margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-        canvas {
-            display: block;
         }
     </style>
 </head>
@@ -177,7 +171,7 @@ val webViewState = rememberWebViewStateWithHTMLData(
 ```
 - Inside the newly created `cube.js`, paste the following
 ```js
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.173.0/build/three.module.js";
+import * as THREE from "three";
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -189,6 +183,7 @@ const geometry = new THREE.BoxGeometry();
 const material = new THREE.MeshNormalMaterial();
 const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
+window.cube = cube;
 
 camera.position.z = 5;
 
@@ -197,6 +192,10 @@ function animate() {
     cube.rotation.x += 0.01;
     cube.rotation.y += 0.01;
     renderer.render(scene, camera);
+
+    const { x, y, z, w } = cube.quaternion;
+    const quaternionString = `Quaternion: (x: ${x.toFixed(2)}, y: ${y.toFixed(2)}, z: ${z.toFixed(2)}, w: ${w.toFixed(2)})`;
+    window.kmpJsBridge.callNative("Quaternion", quaternionString, null);
 }
 
 animate();
@@ -338,7 +337,7 @@ WebView(
 ```kotlin
 Text(quaternion, modifier = Modifier.padding(12.dp))
 ```
-- Add the callback code inside the `animate()` function in `cube.js`, directly underneath the `renderer.render(scene, camera);` line:
+- The callback code inside the `animate()` function in `cube.js` will generate the quaternion text:
 ```js
 const { x, y, z, w } = cube.quaternion;
 const quaternionString = `Quaternion: (x: ${x.toFixed(2)}, y: ${y.toFixed(2)}, z: ${z.toFixed(2)}, w: ${w.toFixed(2)})`;
