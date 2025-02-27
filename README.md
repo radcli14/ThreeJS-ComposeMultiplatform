@@ -1,6 +1,9 @@
 # ThreeJS-ComposeMultiplatform
 Integration of the Three.js toolset into the Compose Multiplatform framework 
 
+There is a corresponding blog post about this tutorial on my website, https://www.dc-engineer.com/how-to-embed-three-js-into-a-kotlin-jetpack-compose-multiplatform-mobile-app-on-android-and-ios/.
+That one has been cleaned up a bit for readability and formatting, so I recommend you go there if you want to follow-along with the step-by-step process, but if you simply want a working template app, you can simply clone or fork this repository.
+
 ## Procedure
 The sections below provide a step-by-step process describing how a lightweight, Three.js environment may be embedded in an Android/iOS multiplatform app using Jetpack Compose Multiplatform.
 The tutorial is detailed, however, you may also choose to simply clone or fork this repository to start your own project.
