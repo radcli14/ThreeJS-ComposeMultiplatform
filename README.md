@@ -12,7 +12,7 @@ Alternately, you can build your project starting from the [Kotlin Multiplatform 
 
 I mostly bypass some of the basics of Android and Jetpack Compose, but have provided links where appropriate.
 The one thing I do suggest is to **use the Kotlin Multiplatform Wizard** that I have [linked](https://kmp.jetbrains.com/?).
-While you can create the project directly within Android Studio while bypassing that link, generally the wizard is agreed to be more up-to-date at any given time, and its project structure should be consistent with the tutorrial.
+While you can create the project directly within Android Studio while bypassing that link, generally the wizard is agreed to be more up-to-date at any given time, and its project structure should be consistent with the tutorial.
 
 ### Coding Environment Setup
 - Install the latest Android Studio. [Link](https://developer.android.com/studio)
